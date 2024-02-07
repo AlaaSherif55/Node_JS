@@ -53,12 +53,15 @@ function getOption(option) {
     'add': add,
     'delete': del,
     'edit': edit,
-    'list': list
+    'list': list,
   }[option];
 
-  return operation || "NOT A CRUD OPERATION";
+  return operation || defaultOperation;
 }
 
+function defaultOperation() {
+  console.log("NOT A CRUD OPERATION");
+}
 function edit(todos, data) {
   const [editID, editStatus, editTitle] = data;
   const intEditId = parseInt(editID);
@@ -103,8 +106,5 @@ function del(todos, data) {
 }
 
 const operation = getOption(command);
-if (operation) {
-  operation(todos, data);
-} else {
-  console.log("NOT A CRUD OPERATION");
-}
+operation(todos, data);
+
