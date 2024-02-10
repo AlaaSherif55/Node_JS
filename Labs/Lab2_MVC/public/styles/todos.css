@@ -10,10 +10,10 @@
 
 .card-title {
   font-size: 18px;
-  font-weight: bold;
-  margin-right: 800px; /* Add some spacing between title and status */
+  font-weight: bold; 
 }
 
 .card-status {
   color: #555;
+  margin-left: auto;
 }
