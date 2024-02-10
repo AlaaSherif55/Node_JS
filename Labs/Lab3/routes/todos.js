@@ -5,7 +5,7 @@ const todoController = require('../Controller/todos');
 router.get('/', todoController.showAllTodos);
 
 router.get('/html', (req, res) => {
-  res.render('todos', { todos: todoController.getAllTodos() });
+  res.render('todos', { todos: todoController.getFiliterdTodos(req.query.status) });
 });
 // get specific todo
 router.get('/:id', todoController.validateID, todoController.validateExistTodo, todoController.getSpecificTodo);

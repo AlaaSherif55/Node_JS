@@ -6,12 +6,14 @@ function getNextID(todos) {
   }
   return 1;
 }
+
 const validateID = (req, res, next) => {
   if (Number.isNaN(parseInt(req.params.id, 10))) {
     res.status(400).send('NOT A Valid ID');
   }
   next();
 };
+
 const validateExistTodo = (req, res, next) => {
   const path = 'todos.json';
   const todos = todoModel.getAllTodosRe(path);
@@ -24,12 +26,14 @@ const validateExistTodo = (req, res, next) => {
   req.todos = todos;
   next();
 };
+
 const validatePost = (req, res, next) => {
   if (!req.body.id && req.body.title && !req.body.status) {
     next();
   }
   res.status(400).send('Incorrect input');
 };
+
 const validatePatch = (req, res, next) => {
   if (!req.body.id) {
     if (req.body.title || req.body.status) {
@@ -39,27 +43,47 @@ const validatePatch = (req, res, next) => {
     res.status(400).send('Incorrect input');
   }
 };
+
 const getSpecificTodo = (req, res) => {
   res.json(req.todo);
 };
+
 const showAllTodos = (req, res) => {
-  const todos = todoModel.getAllTodosRe('todos.json');
-  res.json(todos);
+  if (!req.query) {
+    const todos = todoModel.getAllTodosRe();
+    res.json(todos);
+  }
+
+  if (!req.query.status) {
+    res.status(400).send('incorrect condition');
+  }
+
+  const filterTodos = todoModel.getFiliterdTodosFile(req.query.status);
+  res.json(filterTodos);
 };
-const getAllTodos = () => todoModel.getAllTodosRe('todos.json');
+const getAllTodos = () => todoModel.getAllTodosRe();
+
+const getFiliterdTodos = (status) => {
+  if (!status) {
+    return todoModel.getAllTodosRe();
+  }
+  return todoModel.getFiliterdTodosFile(status);
+};
 
 const createTodo = (req, res) => {
-  const todos = todoModel.getAllTodosRe('todos.json');
+  const todos = todoModel.getAllTodosRe();
   const newTodo = { id: getNextID(todos), title: req.body.title, status: 'to-do' };
   todos.push(newTodo);
   todoModel.writeIntoTodosFile(todos);
   res.end();
 };
+
 const deleteTodo = (req, res) => {
   const todosAfterDel = req.todos.filter((todo) => todo.id !== parseInt(req.params.id, 10));
   todoModel.writeIntoTodosFile(todosAfterDel);
   res.send('deleted successfully!');
 };
+
 const updateTodo = (req, res) => {
   const todoToEdit = req.todos.find((todo) => todo.id === parseInt(req.params.id, 10));
   if (req.body.title) {
@@ -87,4 +111,5 @@ module.exports = {
   createTodo,
   deleteTodo,
   updateTodo,
+  getFiliterdTodos,
 };
