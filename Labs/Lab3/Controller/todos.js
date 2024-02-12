@@ -38,6 +38,8 @@ const validatePatch = (req, res, next) => {
   if (!req.body.id) {
     if (req.body.title || req.body.status) {
       next();
+    } else {
+      res.status(400).send('Incorrect input');
     }
   } else {
     res.status(400).send('Incorrect input');
@@ -49,15 +51,16 @@ const getSpecificTodo = (req, res) => {
 };
 
 const showAllTodos = (req, res) => {
-  if (!req.query) {
+  if (Object.keys(req.query).length === 0) {
     const todos = todoModel.getAllTodosRe();
     res.json(todos);
+    return;
   }
 
   if (!req.query.status) {
     res.status(400).send('incorrect condition');
   }
-
+  console.log('ss');
   const filterTodos = todoModel.getFiliterdTodosFile(req.query.status);
   res.json(filterTodos);
 };
