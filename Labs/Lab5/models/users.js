@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 
@@ -43,10 +44,9 @@ const usersSchema = new mongoose.Schema(
 usersSchema.pre('findOneAndUpdate', async function (next) {
   try {
     const docToUpdate = await this.model.findOne(this.getQuery());
-    if (this.password) {
-      this.password = await bcrypt.hash(this.password, 10);
+    if (this._update.password) {
+      this._update.password = await bcrypt.hash(this._update.password, 10);
     }
-
     await docToUpdate.validate();
 
     next();
