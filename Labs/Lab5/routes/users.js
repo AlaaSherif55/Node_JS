@@ -6,6 +6,7 @@ const bcrypt = require('bcrypt');
 const { UsersController } = require('../controllers');
 const asyncWrapper = require('../lib/async-wrapper');
 const CustomError = require('../lib/customError');
+const authorization = require('../controllers/authorization');
 
 router.post('/', async (req, res, next) => {
   const [err, user] = await asyncWrapper(UsersController.create(req.body));
@@ -26,15 +27,17 @@ router.post('/login', async (req, res, next) => {
   });
 });
 
+router.use(authorization.validateUser);
+
 router.get('/', async (req, res, next) => {
-  const [err, user] = await asyncWrapper(UsersController.getAllTodos());
+  const [err, user] = await asyncWrapper(UsersController.getAllUsers(req.user));
   if (!err) {
     return res.json(user);
   }
   return next(err);
 });
 router.get('/:id', async (req, res, next) => {
-  const [err, user] = await asyncWrapper(UsersController.getTodo(req.params.id));
+  const [err, user] = await asyncWrapper(UsersController.getUser(req.params.id));
   if (!err) {
     return res.json(user);
   }

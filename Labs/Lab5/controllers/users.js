@@ -28,7 +28,7 @@ const login = async (username, password) => {
   return user;
 };
 
-const getTodo = async (query) => {
+const getUser = async (query) => {
   const user = await Users.findOne({ _id: query })
     .catch((err) => {
       throw new CustomError(err.message, 422);
@@ -36,11 +36,17 @@ const getTodo = async (query) => {
   return user;
 };
 
-const getAllTodos = async () => {
-  const users = await Users.find().select({ _id: 0, firstName: 1 })
-    .catch((err) => {
-      throw new CustomError(err.message, 422);
-    });
+const getAllUsers = async (id, isAdmin) => {
+  let users;
+  if (isAdmin) {
+    users = await Users.find().select({ _id: 0, firstName: 1 })
+      .catch((err) => {
+        throw new CustomError(err.message, 422);
+      });
+  } else {
+    users = await Users.find({ _id: id }).select({ _id: 0, firstName: 1 });
+  }
+
   return users;
 };
 
@@ -70,10 +76,10 @@ const getTodosForUser = async (query) => {
 
 module.exports = {
   create,
-  getAllTodos,
+  getAllUsers,
   getTodosForUser,
   deleteUser,
   updateUser,
-  getTodo,
+  getUser,
   login,
 };
