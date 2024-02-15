@@ -40,10 +40,19 @@ const usersSchema = new mongoose.Schema(
     },
   },
 );
-usersSchema.pre('findOneAndUpdate', async function foau(next) {
-  this.options.runValidators = true;
-  this.password = await bcrypt.hash(this.password, 10);
-  next();
+usersSchema.pre('findOneAndUpdate', async function (next) {
+  try {
+    const docToUpdate = await this.model.findOne(this.getQuery());
+    if (this.password) {
+      this.password = await bcrypt.hash(this.password, 10);
+    }
+
+    await docToUpdate.validate();
+
+    next();
+  } catch (error) {
+    next(error);
+  }
 });
 usersSchema.pre('save', async function preSave() {
   this.password = await bcrypt.hash(this.password, 10);
