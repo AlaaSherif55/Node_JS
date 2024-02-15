@@ -30,7 +30,7 @@ router.post('/login', async (req, res, next) => {
 router.use(authorization.validateUser);
 
 router.get('/', async (req, res, next) => {
-  const [err, user] = await asyncWrapper(UsersController.getAllUsers(req.user));
+  const [err, user] = await asyncWrapper(UsersController.getAllUsers(req.user, req.isAdmin));
   if (!err) {
     return res.json(user);
   }
@@ -53,7 +53,7 @@ router.get('/:id/todos', async (req, res, next) => {
 });
 
 router.delete('/:id', async (req, res, next) => {
-  const [err, user] = await asyncWrapper(UsersController.deleteUser(req.params.id));
+  const [err, user] = await asyncWrapper(UsersController.deleteUser(req.params.id, req.isAdmin));
   if (!err) {
     return res.json(user);
   }
@@ -61,7 +61,8 @@ router.delete('/:id', async (req, res, next) => {
 });
 
 router.patch('/:id', async (req, res, next) => {
-  const [err, user] = await asyncWrapper(UsersController.updateUser(req.params.id, req.body));
+  // eslint-disable-next-line max-len
+  const [err, user] = await asyncWrapper(UsersController.updateUser(req.params.id, req.body, req.isAdmin));
   if (!err) {
     return res.json(user);
   }

@@ -50,20 +50,28 @@ const getAllUsers = async (id, isAdmin) => {
   return users;
 };
 
-const deleteUser = async (id) => {
-  const acknowledge = await Users.deleteOne({ _id: id })
-    .catch((err) => {
-      throw new CustomError(err.message, 422);
-    });
-  return acknowledge;
+const deleteUser = async (id, isAdmin) => {
+  let acknowledge;
+  if (isAdmin) {
+    acknowledge = await Users.deleteOne({ _id: id })
+      .catch((err) => {
+        throw new CustomError(err.message, 422);
+      });
+    return acknowledge;
+  }
+  return new CustomError('unauthorized', 422);
 };
 
-const updateUser = async (id, body) => {
-  const user = await Users.findOneAndUpdate({ _id: id }, body, { new: true })
-    .catch((err) => {
-      throw new CustomError(err.message, 422);
-    });
-  return user;
+const updateUser = async (id, body, isAdmin) => {
+  let user;
+  if (isAdmin) {
+    user = await Users.findOneAndUpdate({ _id: id }, body, { new: true })
+      .catch((err) => {
+        throw new CustomError(err.message, 422);
+      });
+    return user;
+  }
+  return new CustomError('unauthorized', 422);
 };
 
 const getTodosForUser = async (query) => {
